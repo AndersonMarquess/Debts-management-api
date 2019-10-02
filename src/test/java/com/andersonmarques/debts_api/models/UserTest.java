@@ -10,7 +10,6 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 @SpringBootTest
@@ -37,7 +36,7 @@ public class UserTest {
 		user.addRole("user");
 		assertNotNull(user);
 		assertTrue(user.getRoles().size() == 1);
-		assertTrue(user.getRoles().contains(new SimpleGrantedAuthority("USER")));
+		assertTrue(user.getRoles().contains("ROLE_USER"));
 	}
 
 	@Test
@@ -49,7 +48,7 @@ public class UserTest {
 	@Test
 	public void changeRolesOutsideClassThrowsException() {
 		User user = new UserBuilder().build();
-		Optional<SimpleGrantedAuthority> role = user.getRoles().stream().findFirst();
+		Optional<String> role = user.getRoles().stream().findFirst();
 		assertThrows(UnsupportedOperationException.class, () -> user.getRoles().remove(role.get()));
 		assertEquals(1, user.getRoles().size());
 	}

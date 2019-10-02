@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class User {
@@ -13,18 +12,17 @@ public class User {
 	private String name;
 	private String email;
 	private String password;
-	private Set<SimpleGrantedAuthority> roles = new HashSet<>();
+	private Set<String> roles = new HashSet<>();
 
 	public User() {
 		this.id = UUID.randomUUID().toString();
 	}
 
-	public User(String name, String email, String password, Set<SimpleGrantedAuthority> roles) {
+	public User(String name, String email, String password) {
 		this();
 		this.name = name;
 		this.email = email;
 		this.password = this.hashPassword(password);
-		this.roles = roles;
 	}
 
 	private String hashPassword(String password) {
@@ -66,12 +64,15 @@ public class User {
 		this.password = this.hashPassword(password);
 	}
 
-	public Set<SimpleGrantedAuthority> getRoles() {
+	public Set<String> getRoles() {
 		return Collections.unmodifiableSet(this.roles);
 	}
 
 	public void addRole(String role) {
-		this.roles.add(new SimpleGrantedAuthority(role.toUpperCase()));
+		if(!role.toUpperCase().startsWith("ROLE_")) {
+			role = "ROLE_"+role;
+		}
+		this.roles.add(role.toUpperCase());
 	}
 
 	@Override

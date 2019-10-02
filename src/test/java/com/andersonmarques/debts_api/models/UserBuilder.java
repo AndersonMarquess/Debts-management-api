@@ -3,28 +3,28 @@ package com.andersonmarques.debts_api.models;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
 public class UserBuilder {
 
 	private String name;
 	private String email;
 	private String password;
-	private Set<SimpleGrantedAuthority> roles = new HashSet<>();
+	private Set<String> roles = new HashSet<>();
 
 	public UserBuilder() {
 		this.name = "anderson";
 		this.email = "anderson@email.com";
 		this.password = "password";
-		this.roles.add(new SimpleGrantedAuthority("USER"));
+		this.roles.add("USER");
 	}
 
 	public User build() {
-		return new User(this.name, this.email, this.password, this.roles);
+		User user = new User(this.name, this.email, this.password);
+		roles.forEach(r -> user.addRole(r));
+		return user;
 	}
 
 	public UserBuilder withRole(String role) {
-		this.roles.add(new SimpleGrantedAuthority(role.toUpperCase()));
+		this.roles.add(role);
 		return this;
 	}
 
