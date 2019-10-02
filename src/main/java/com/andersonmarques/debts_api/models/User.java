@@ -10,7 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class User {
 	private String id;
-	private String nome;
+	private String name;
 	private String email;
 	private String password;
 	private Set<SimpleGrantedAuthority> roles = new HashSet<>();
@@ -19,9 +19,9 @@ public class User {
 		this.id = UUID.randomUUID().toString();
 	}
 
-	public User(String id, String nome, String email, String password, Set<SimpleGrantedAuthority> roles) {
-		this.id = id;
-		this.nome = nome;
+	public User(String name, String email, String password, Set<SimpleGrantedAuthority> roles) {
+		this();
+		this.name = name;
 		this.email = email;
 		this.password = this.hashPassword(password);
 		this.roles = roles;
@@ -42,12 +42,12 @@ public class User {
 		this.id = id;
 	}
 
-	public String getNome() {
-		return this.nome;
+	public String getName() {
+		return this.name;
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getEmail() {
@@ -72,5 +72,16 @@ public class User {
 
 	public void addRole(String role) {
 		this.roles.add(new SimpleGrantedAuthority(role.toUpperCase()));
+	}
+
+	@Override
+	public String toString() {
+		return "{" +
+			" id='" + getId() + "'" +
+			", name='" + getName() + "'" +
+			", email='" + getEmail() + "'" +
+			", password='" + getPassword() + "'" +
+			", roles='" + getRoles() + "'" +
+			"}";
 	}
 }

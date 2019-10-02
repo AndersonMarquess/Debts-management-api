@@ -20,12 +20,12 @@ public class UserTest {
 	public void verifyGettersAndSetter() {
 		User user = new User();
 		user.setId("id");
-		user.setNome("nome");
+		user.setName("nome");
 		user.setEmail("email@email.com");
 		user.setPassword("password");
 
 		assertEquals("id", user.getId());
-		assertEquals("nome", user.getNome());
+		assertEquals("nome", user.getName());
 		assertEquals("email@email.com", user.getEmail());
 		assertNotEquals("password", user.getPassword());
 		assertTrue(BCrypt.checkpw("password", user.getPassword()));
