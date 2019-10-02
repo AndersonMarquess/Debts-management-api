@@ -32,4 +32,9 @@ public class UserBuilder {
 		this.password = password;
 		return this;
 	}
+
+	public UserBuilder withName(String name) {
+		this.name = name;
+		return this;
+	}
 }

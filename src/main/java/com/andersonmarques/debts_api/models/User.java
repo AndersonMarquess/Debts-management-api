@@ -5,11 +5,22 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+@Document
 public class User {
+	@Id
 	private String id;
+	@NotBlank(message = "O nome não pode ser vazio.")
+	@Size(min = 5, max = 60, message = "O nome não pode ser menor que {min} ou maior que {max} caracteres.")
 	private String name;
+	@Indexed(unique = true)
 	private String email;
 	private String password;
 	private Set<String> roles = new HashSet<>();
@@ -26,7 +37,7 @@ public class User {
 	}
 
 	private String hashPassword(String password) {
-		if(password.length() != 60 || !password.startsWith("$2a$10$")) {
+		if (password.length() != 60 || !password.startsWith("$2a$10$")) {
 			return new BCryptPasswordEncoder().encode(password);
 		}
 		return password;
