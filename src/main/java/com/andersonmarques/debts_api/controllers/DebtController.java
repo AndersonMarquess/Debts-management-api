@@ -2,8 +2,8 @@ package com.andersonmarques.debts_api.controllers;
 
 import javax.validation.Valid;
 
-import com.andersonmarques.debts_api.models.User;
-import com.andersonmarques.debts_api.services.UserService;
+import com.andersonmarques.debts_api.models.Debt;
+import com.andersonmarques.debts_api.services.DebtService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,18 +12,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class UserController {
+public class DebtController {
 
 	private static final String APPLICATION_JSON = "application/json";
-	private static final String BASE_PATH_V1 = "v1/users";
+	private static final String BASE_PATH_V1 = "v1/debts";
 
 	@Autowired
-	private UserService userService;
+	private DebtService debtService;
 
 	@PostMapping(path = BASE_PATH_V1, consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
-	public ResponseEntity<User> create(@Valid @RequestBody User user) {
-		user = userService.create(user);
-		System.out.println("Novo usuário: "+user);
-		return ResponseEntity.status(201).body(user);
+	public ResponseEntity<Debt> create(@Valid @RequestBody Debt debt) {
+		debt = debtService.create(debt);
+		System.out.println("Nova dívida criada: " + debt);
+		return ResponseEntity.status(201).body(debt);
 	}
 }

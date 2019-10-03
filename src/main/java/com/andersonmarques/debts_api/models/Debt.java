@@ -3,12 +3,29 @@ package com.andersonmarques.debts_api.models;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document
 public class Debt {
+	@Id
 	private String id;
+	@Size(min = 5, max = 60, message = "A descrição deve conter entre {min} e {max} caracteres.")
 	private String description;
+	@DecimalMin("1.0")
+	@DecimalMax("999999.0")
 	private Double amount;
+	@Min(1) @Max(99)
 	private Integer installment;
 	private Integer dueDay;
+	@NotEmpty(message = "O id do criador é obrigatório.")
 	private String ownerId;
 	private LocalDate creationDate;
 
@@ -16,6 +33,7 @@ public class Debt {
 		this.id = UUID.randomUUID().toString();
 		this.creationDate = LocalDate.now();
 		this.installment = 1;
+		this.dueDay = 1;
 	}
 
 	public Debt(String description, Double amount, Integer installment, Integer dueDay, String ownerId) {
