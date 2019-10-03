@@ -36,4 +36,8 @@ public class DebtControllerBuilder {
 		this.debt = debt;
 		return this;
 	}
+
+	public ResponseEntity<Debt> pay() {
+		return client.postForEntity("/v1/debts/pay/" + this.debt.getId(), null, Debt.class);
+	}
 }

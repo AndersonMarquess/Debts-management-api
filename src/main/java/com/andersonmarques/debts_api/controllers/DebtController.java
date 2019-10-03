@@ -7,6 +7,7 @@ import com.andersonmarques.debts_api.services.DebtService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,5 +26,11 @@ public class DebtController {
 		debt = debtService.create(debt);
 		System.out.println("Nova dívida criada: " + debt);
 		return ResponseEntity.status(201).body(debt);
+	}
+
+	@PostMapping(path = BASE_PATH_V1 + "/pay/{debtId}")
+	public ResponseEntity<Debt> pay(@PathVariable("debtId") String debtId) {
+		Debt debt = debtService.pay(debtId);
+		return ResponseEntity.ok().body(debt);
 	}
 }

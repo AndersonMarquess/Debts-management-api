@@ -2,6 +2,7 @@ package com.andersonmarques.debts_api.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.andersonmarques.debts_api.models.Debt;
 import com.andersonmarques.debts_api.models.DebtBuilder;
@@ -71,5 +72,40 @@ public class DebtControllerTest {
 
 		assertEquals(201, postUser.getStatusCodeValue());
 		assertEquals(400, postDebt.getStatusCodeValue());
+	}
+
+	@Test
+	public void reduceInstallmentAfterPay() {
+		Debt debt = new DebtBuilder().withInstallment(10).build();
+		ResponseEntity<User> postUser = new UserControllerBuilder(client, headers).post();
+		DebtControllerBuilder debtControllerBuilder = new DebtControllerBuilder(client, headers);
+		ResponseEntity<Debt> postDebt = debtControllerBuilder.withDebt(debt).post(postUser.getBody());
+		ResponseEntity<Debt> payDebt = debtControllerBuilder.withDebt(postDebt.getBody()).pay();
+
+		assertEquals(201, postUser.getStatusCodeValue());
+		assertEquals(201, postDebt.getStatusCodeValue());
+		assertEquals(200, payDebt.getStatusCodeValue());
+		assertEquals(10, debt.getInstallment());
+		assertNotNull(payDebt.getBody());
+		assertEquals(9, payDebt.getBody().getInstallment());
+	}
+
+	@Test
+	public void removeDebtAfterPayLastInstallment() {
+		Debt debt = new DebtBuilder().withInstallment(2).build();
+		ResponseEntity<User> postUser = new UserControllerBuilder(client, headers).post();
+		DebtControllerBuilder debtControllerBuilder = new DebtControllerBuilder(client, headers);
+		ResponseEntity<Debt> postDebt = debtControllerBuilder.withDebt(debt).post(postUser.getBody());
+		ResponseEntity<Debt> payDebt = debtControllerBuilder.withDebt(postDebt.getBody()).pay();
+		ResponseEntity<Debt> payDebtFinal = debtControllerBuilder.withDebt(postDebt.getBody()).pay();
+
+		assertEquals(201, postUser.getStatusCodeValue());
+		assertEquals(201, postDebt.getStatusCodeValue());
+		assertEquals(200, payDebt.getStatusCodeValue());
+		assertEquals(200, payDebtFinal.getStatusCodeValue());
+		assertEquals(2, debt.getInstallment());
+		assertNotNull(payDebt.getBody());
+		assertEquals(1, payDebt.getBody().getInstallment());
+		assertNull(payDebtFinal.getBody());
 	}
 }
