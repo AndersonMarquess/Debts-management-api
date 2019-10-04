@@ -63,4 +63,8 @@ public class DebtControllerBuilder {
 	public ResponseEntity<Void> delete(String debtId) {
 		return client.exchange("/v1/debts/" + debtId, HttpMethod.DELETE, new HttpEntity<>(headers), Void.class);
 	}
+
+	public ResponseEntity<Debt> updateDebt(Debt debt) {
+		return client.exchange("/v1/debts", HttpMethod.PUT, new HttpEntity<Debt>(debt, headers), Debt.class);
+	}
 }

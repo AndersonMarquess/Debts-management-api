@@ -77,7 +77,6 @@ public class DebtControllerTest {
 	public void reduceInstallmentAfterPay() {
 		Debt debt = new DebtBuilder().withInstallment(10).build();
 		ResponseEntity<User> postUser = new UserControllerBuilder(client, headers).post();
-		// DebtControllerBuilder debtControllerBuilder = debtControllerBuilder;
 		ResponseEntity<Debt> postDebt = debtControllerBuilder.withDebt(debt).post(postUser.getBody());
 		ResponseEntity<Debt> payDebt = debtControllerBuilder.withDebt(postDebt.getBody()).pay();
 
@@ -140,7 +139,6 @@ public class DebtControllerTest {
 		ResponseEntity<User> postUser = new UserControllerBuilder(client, headers).post();
 		ResponseEntity<Debt> postDebt = debtControllerBuilder.post(postUser.getBody());
 		String debtId = postDebt.getBody().getId();
-		System.out.println(debtId);
 		ResponseEntity<Void> deleteDebt = debtControllerBuilder.delete(debtId);
 		ResponseEntity<Debt> getDebt = debtControllerBuilder.getDetailsFor(debtId);
 
@@ -148,5 +146,23 @@ public class DebtControllerTest {
 		assertEquals(201, postDebt.getStatusCodeValue());
 		assertEquals(200, deleteDebt.getStatusCodeValue());
 		assertEquals(400, getDebt.getStatusCodeValue());
+	}
+
+	@Test
+	public void updateDebtDetails() {
+		ResponseEntity<User> postUser = new UserControllerBuilder(client, headers).post();
+		ResponseEntity<Debt> postDebt = debtControllerBuilder.post(postUser.getBody());
+		Debt debt = postDebt.getBody();
+		debt.setAmount(200d);
+		debt.setInstallment(48);
+		ResponseEntity<Debt> updateDebt = debtControllerBuilder.updateDebt(debt);
+		ResponseEntity<Debt> getDebt = debtControllerBuilder.getDetailsFor(debt.getId());
+
+		assertEquals(201, postUser.getStatusCodeValue());
+		assertEquals(201, postDebt.getStatusCodeValue());
+		assertEquals(200, getDebt.getStatusCodeValue());
+		assertEquals(200, updateDebt.getStatusCodeValue());
+		assertEquals(debt.getAmount(), getDebt.getBody().getAmount());
+		assertEquals(debt.getInstallment(), getDebt.getBody().getInstallment());
 	}
 }

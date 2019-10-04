@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,5 +56,11 @@ public class DebtController {
 	public ResponseEntity<Void> deleteById(@PathVariable("debtId") String debtId) {
 		debtService.deleteById(debtId);
 		return ResponseEntity.ok().build();
+	}
+
+	@PutMapping(path = BASE_PATH_V1, consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+	public ResponseEntity<Debt> update(@Valid @RequestBody Debt debt) {
+		debt = debtService.update(debt);
+		return ResponseEntity.ok().body(debt);
 	}
 }

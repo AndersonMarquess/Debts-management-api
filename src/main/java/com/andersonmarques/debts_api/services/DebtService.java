@@ -51,4 +51,8 @@ public class DebtService {
 		ExampleMatcher matcher = ExampleMatcher.matchingAny().withIgnorePaths("creationDate", "_id");
 		return debtRepository.findAll(Example.of(debt, matcher), pageable);
 	}
+
+	public Debt update(Debt debt) {
+		return debtRepository.save(debt);
+	}
 }
