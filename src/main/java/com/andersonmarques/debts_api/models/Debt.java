@@ -22,14 +22,15 @@ public class Debt {
 	@DecimalMin("1.0")
 	@DecimalMax("999999.0")
 	private Double amount;
-	@Min(1) @Max(99)
+	@Min(1)
+	@Max(99)
 	private Integer installment;
 	private Integer dueDay;
 	@NotEmpty(message = "O id do criador é obrigatório.")
 	private String ownerId;
 	private LocalDate creationDate;
 
-	public Debt() { 
+	public Debt() {
 		this.id = UUID.randomUUID().toString();
 		this.creationDate = LocalDate.now();
 		this.installment = 1;
@@ -103,5 +104,9 @@ public class Debt {
 
 	public Double getTotalAmount() {
 		return this.amount * this.installment;
+	}
+
+	public LocalDate getDueDate() {
+		return LocalDate.now().withDayOfMonth(dueDay);
 	}
 }

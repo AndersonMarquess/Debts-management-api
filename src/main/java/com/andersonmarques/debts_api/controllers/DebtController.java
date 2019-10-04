@@ -6,10 +6,14 @@ import com.andersonmarques.debts_api.models.Debt;
 import com.andersonmarques.debts_api.services.DebtService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -32,5 +36,11 @@ public class DebtController {
 	public ResponseEntity<Debt> pay(@PathVariable("debtId") String debtId) {
 		Debt debt = debtService.pay(debtId);
 		return ResponseEntity.ok().body(debt);
+	}
+
+	@GetMapping(path = BASE_PATH_V1, produces = APPLICATION_JSON)
+	public ResponseEntity<Page<Debt>> listAllWithPg(Pageable pageable, @RequestHeader("userId") String userId) {
+		Page<Debt> debts = debtService.findAllWithPg(pageable, userId);
+		return ResponseEntity.ok().body(debts);
 	}
 }

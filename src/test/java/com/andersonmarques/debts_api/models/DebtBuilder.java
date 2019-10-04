@@ -34,4 +34,9 @@ public class DebtBuilder {
 	public Debt build() {
 		return new Debt(description, amount, installment, dueDay, ownerId);
 	}
+
+	public DebtBuilder withDescription(String description) {
+		this.description = description;
+		return this;
+	}
 }

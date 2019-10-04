@@ -28,11 +28,13 @@ public class DebtControllerTest {
 	@Autowired
 	private TestRestTemplate client;
 	private HttpHeaders headers;
+	private DebtControllerBuilder debtControllerBuilder;
 
 	@BeforeEach
 	public void setupObjects() {
 		mongoTemplate.getDb().drop();
-		this.headers = new HttpHeaders();
+		debtControllerBuilder = new DebtControllerBuilder(client, headers);
+		headers = new HttpHeaders();
 		headers.add("content-Type", "application/json");
 		headers.add("accept", "application/json");
 	}
@@ -94,7 +96,6 @@ public class DebtControllerTest {
 	public void removeDebtAfterPayLastInstallment() {
 		Debt debt = new DebtBuilder().withInstallment(2).build();
 		ResponseEntity<User> postUser = new UserControllerBuilder(client, headers).post();
-		DebtControllerBuilder debtControllerBuilder = new DebtControllerBuilder(client, headers);
 		ResponseEntity<Debt> postDebt = debtControllerBuilder.withDebt(debt).post(postUser.getBody());
 		ResponseEntity<Debt> payDebt = debtControllerBuilder.withDebt(postDebt.getBody()).pay();
 		ResponseEntity<Debt> payDebtFinal = debtControllerBuilder.withDebt(postDebt.getBody()).pay();
@@ -107,5 +108,16 @@ public class DebtControllerTest {
 		assertNotNull(payDebt.getBody());
 		assertEquals(1, payDebt.getBody().getInstallment());
 		assertNull(payDebtFinal.getBody());
+	}
+
+	@Test
+	public void sendUserRefInHeaderForListAllDebtOfUser() {
+		ResponseEntity<User> user = new UserControllerBuilder(client, headers).post();
+		debtControllerBuilder.postMultiples(5, user.getBody().getId());
+		ResponseEntity<String> debts = debtControllerBuilder.findAllPageable(user.getBody().getId());
+
+		assertEquals(201, user.getStatusCodeValue());
+		assertEquals(200, debts.getStatusCodeValue());
+		assertNotNull(debts.getBody());
 	}
 }
