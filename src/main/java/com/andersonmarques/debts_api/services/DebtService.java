@@ -34,7 +34,7 @@ public class DebtService {
 	public Debt pay(String debtId) {
 		Debt debt = findById(debtId);
 		if (debt.getInstallment() == 1) {
-			delet(debtId);
+			deleteById(debtId);
 			return null;
 		}
 
@@ -42,7 +42,7 @@ public class DebtService {
 		return debtRepository.save(debt);
 	}
 
-	public void delet(String debtId) {
+	public void deleteById(String debtId) {
 		debtRepository.deleteById(debtId);
 	}
 

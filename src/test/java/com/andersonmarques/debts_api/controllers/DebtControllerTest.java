@@ -134,4 +134,19 @@ public class DebtControllerTest {
 		assertEquals(debt.getDescription(), getDebt.getBody().getDescription());
 		assertEquals(debt.getAmount(), getDebt.getBody().getAmount());
 	}
+
+	@Test
+	public void removeDebtById() {
+		ResponseEntity<User> postUser = new UserControllerBuilder(client, headers).post();
+		ResponseEntity<Debt> postDebt = debtControllerBuilder.post(postUser.getBody());
+		String debtId = postDebt.getBody().getId();
+		System.out.println(debtId);
+		ResponseEntity<Void> deleteDebt = debtControllerBuilder.delete(debtId);
+		ResponseEntity<Debt> getDebt = debtControllerBuilder.getDetailsFor(debtId);
+
+		assertEquals(201, postUser.getStatusCodeValue());
+		assertEquals(201, postDebt.getStatusCodeValue());
+		assertEquals(200, deleteDebt.getStatusCodeValue());
+		assertEquals(400, getDebt.getStatusCodeValue());
+	}
 }

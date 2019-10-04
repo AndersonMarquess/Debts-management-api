@@ -59,4 +59,8 @@ public class DebtControllerBuilder {
 	public ResponseEntity<Debt> getDetailsFor(String debtId) {
 		return client.exchange("/v1/debts/" + debtId, HttpMethod.GET, new HttpEntity<>(headers), Debt.class);
 	}
+
+	public ResponseEntity<Void> delete(String debtId) {
+		return client.exchange("/v1/debts/" + debtId, HttpMethod.DELETE, new HttpEntity<>(headers), Void.class);
+	}
 }

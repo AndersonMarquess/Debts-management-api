@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,8 +46,14 @@ public class DebtController {
 	}
 
 	@GetMapping(path = BASE_PATH_V1 + "/{debtId}", produces = APPLICATION_JSON)
-	public ResponseEntity<Debt> listAllWithPg(@PathVariable("debtId") String debtId) {
+	public ResponseEntity<Debt> findDetails(@PathVariable("debtId") String debtId) {
 		Debt debt = debtService.findById(debtId);
 		return ResponseEntity.ok().body(debt);
+	}
+
+	@DeleteMapping(path = BASE_PATH_V1 + "/{debtId}", produces = APPLICATION_JSON)
+	public ResponseEntity<Void> deleteById(@PathVariable("debtId") String debtId) {
+		debtService.deleteById(debtId);
+		return ResponseEntity.ok().build();
 	}
 }
