@@ -33,18 +33,17 @@ public class DebtControllerTest {
 	@BeforeEach
 	public void setupObjects() {
 		mongoTemplate.getDb().drop();
-		debtControllerBuilder = new DebtControllerBuilder(client, headers);
 		headers = new HttpHeaders();
 		headers.add("content-Type", "application/json");
 		headers.add("accept", "application/json");
+		debtControllerBuilder = new DebtControllerBuilder(client, headers);
 	}
 
 	@Test
 	public void notAllowCreateDebtWithoutAValidUser() {
 		ResponseEntity<User> postUser = new UserControllerBuilder(client, headers).post();
 		Debt debt = new DebtBuilder().withAmount(25d).withInstallment(3).build();
-		ResponseEntity<Debt> postDebt = new DebtControllerBuilder(client, headers).withDebt(debt)
-				.post(postUser.getBody());
+		ResponseEntity<Debt> postDebt = debtControllerBuilder.withDebt(debt).post(postUser.getBody());
 
 		assertEquals(201, postUser.getStatusCodeValue());
 		assertEquals(201, postDebt.getStatusCodeValue());
@@ -58,8 +57,7 @@ public class DebtControllerTest {
 	public void notAllowCreateDebtWithZeroOrNegativeAmount() {
 		ResponseEntity<User> postUser = new UserControllerBuilder(client, headers).post();
 		Debt debt = new DebtBuilder().withAmount(-25d).build();
-		ResponseEntity<Debt> postDebt = new DebtControllerBuilder(client, headers).withDebt(debt)
-				.post(postUser.getBody());
+		ResponseEntity<Debt> postDebt = debtControllerBuilder.withDebt(debt).post(postUser.getBody());
 
 		assertEquals(201, postUser.getStatusCodeValue());
 		assertEquals(400, postDebt.getStatusCodeValue());
@@ -69,8 +67,7 @@ public class DebtControllerTest {
 	public void notAllowCreateDebtWithZeroOrNegativeInstallment() {
 		ResponseEntity<User> postUser = new UserControllerBuilder(client, headers).post();
 		Debt debt = new DebtBuilder().withInstallment(-1).build();
-		ResponseEntity<Debt> postDebt = new DebtControllerBuilder(client, headers).withDebt(debt)
-				.post(postUser.getBody());
+		ResponseEntity<Debt> postDebt = debtControllerBuilder.withDebt(debt).post(postUser.getBody());
 
 		assertEquals(201, postUser.getStatusCodeValue());
 		assertEquals(400, postDebt.getStatusCodeValue());
@@ -80,7 +77,7 @@ public class DebtControllerTest {
 	public void reduceInstallmentAfterPay() {
 		Debt debt = new DebtBuilder().withInstallment(10).build();
 		ResponseEntity<User> postUser = new UserControllerBuilder(client, headers).post();
-		DebtControllerBuilder debtControllerBuilder = new DebtControllerBuilder(client, headers);
+		// DebtControllerBuilder debtControllerBuilder = debtControllerBuilder;
 		ResponseEntity<Debt> postDebt = debtControllerBuilder.withDebt(debt).post(postUser.getBody());
 		ResponseEntity<Debt> payDebt = debtControllerBuilder.withDebt(postDebt.getBody()).pay();
 
@@ -119,5 +116,22 @@ public class DebtControllerTest {
 		assertEquals(201, user.getStatusCodeValue());
 		assertEquals(200, debts.getStatusCodeValue());
 		assertNotNull(debts.getBody());
+	}
+
+	@Test
+	public void getDetailsOfSpecifiedDebtById() {
+		ResponseEntity<User> postUser = new UserControllerBuilder(client, headers).post();
+		ResponseEntity<Debt> postDebt = debtControllerBuilder.post(postUser.getBody());
+		Debt debt = postDebt.getBody();
+		ResponseEntity<Debt> postDebt2 = debtControllerBuilder.post(postUser.getBody());
+		ResponseEntity<Debt> getDebt = debtControllerBuilder.getDetailsFor(debt.getId());
+
+		assertEquals(201, postUser.getStatusCodeValue());
+		assertEquals(201, postDebt.getStatusCodeValue());
+		assertEquals(201, postDebt2.getStatusCodeValue());
+		assertEquals(200, getDebt.getStatusCodeValue());
+		assertNotNull(postDebt.getBody());
+		assertEquals(debt.getDescription(), getDebt.getBody().getDescription());
+		assertEquals(debt.getAmount(), getDebt.getBody().getAmount());
 	}
 }

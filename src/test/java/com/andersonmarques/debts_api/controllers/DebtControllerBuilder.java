@@ -52,9 +52,11 @@ public class DebtControllerBuilder {
 	}
 
 	public ResponseEntity<String> findAllPageable(String userId) {
-		HttpHeaders headers2 = new HttpHeaders();
-		headers2.add("content-Type", "application/json");
-		headers2.add("userId", userId);
+		headers.add("userId", userId);
 		return client.exchange("/v1/debts?page=0&size=50", HttpMethod.GET, new HttpEntity<>(headers), String.class);
+	}
+
+	public ResponseEntity<Debt> getDetailsFor(String debtId) {
+		return client.exchange("/v1/debts/" + debtId, HttpMethod.GET, new HttpEntity<>(headers), Debt.class);
 	}
 }

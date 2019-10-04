@@ -43,4 +43,10 @@ public class DebtController {
 		Page<Debt> debts = debtService.findAllWithPg(pageable, userId);
 		return ResponseEntity.ok().body(debts);
 	}
+
+	@GetMapping(path = BASE_PATH_V1 + "/{debtId}", produces = APPLICATION_JSON)
+	public ResponseEntity<Debt> listAllWithPg(@PathVariable("debtId") String debtId) {
+		Debt debt = debtService.findById(debtId);
+		return ResponseEntity.ok().body(debt);
+	}
 }
