@@ -109,4 +109,16 @@ public class Debt {
 	public LocalDate getDueDate() {
 		return LocalDate.now().withDayOfMonth(dueDay);
 	}
+
+	@Override
+	public String toString() {
+		return "{" +
+			" id='" + getId() + "'" +
+			", description='" + getDescription() + "'" +
+			", amount='" + getAmount() + "'" +
+			", installment='" + getInstallment() + "'" +
+			", dueDay='" + getDueDay() + "'" +
+			", ownerId='" + getOwnerId() + "'" +
+			"}";
+	}
 }
