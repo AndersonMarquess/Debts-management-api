@@ -1,5 +1,6 @@
 package com.andersonmarques.debts_api.controllers;
 
+import com.andersonmarques.debts_api.models.AccountCredentials;
 import com.andersonmarques.debts_api.models.User;
 import com.andersonmarques.debts_api.models.UserBuilder;
 
@@ -26,5 +27,12 @@ public class UserControllerBuilder {
 
 	public ResponseEntity<User> post() {
 		return client.postForEntity("/v1/users", new HttpEntity<User>(user, headers), User.class);
+	}
+
+	public ResponseEntity<Void> login(String email, String password) {
+		AccountCredentials account = new AccountCredentials();
+		account.setEmail(email);
+		account.setPassword(password);
+		return client.postForEntity("/login", new HttpEntity<AccountCredentials>(account, headers), Void.class);
 	}
 }

@@ -19,7 +19,7 @@ public class UserBuilder {
 
 	public User build() {
 		User user = new User(this.name, this.email, this.password);
-		roles.forEach(r -> user.addRole(r));
+		roles.forEach(user::addRole);
 		return user;
 	}
 
@@ -35,6 +35,11 @@ public class UserBuilder {
 
 	public UserBuilder withName(String name) {
 		this.name = name;
+		return this;
+	}
+
+	public UserBuilder withEmail(String email) {
+		this.email = email;
 		return this;
 	}
 }
