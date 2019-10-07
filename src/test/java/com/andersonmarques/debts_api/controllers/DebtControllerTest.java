@@ -29,6 +29,8 @@ public class DebtControllerTest {
 	private TestRestTemplate client;
 	private HttpHeaders headers;
 	private DebtControllerBuilder debtControllerBuilder;
+	private UserControllerBuilder userControllerBuilder;
+	private static final String AUTHORIZATION = "Authorization";
 
 	@BeforeEach
 	public void setupObjects() {
@@ -36,12 +38,19 @@ public class DebtControllerTest {
 		headers = new HttpHeaders();
 		headers.add("content-Type", "application/json");
 		headers.add("accept", "application/json");
-		debtControllerBuilder = new DebtControllerBuilder(client, headers);
+		this.debtControllerBuilder = new DebtControllerBuilder(client, headers);
+		this.userControllerBuilder = new UserControllerBuilder(client, headers);
+	}
+
+	private void setUserTokenInHeader(User user) {
+		String jwt = userControllerBuilder.login(user.getEmail(), "password").getHeaders().getFirst(AUTHORIZATION);
+		headers.add(AUTHORIZATION, jwt);
 	}
 
 	@Test
 	public void notAllowCreateDebtWithoutAValidUser() {
-		ResponseEntity<User> postUser = new UserControllerBuilder(client, headers).post();
+		ResponseEntity<User> postUser = userControllerBuilder.post();
+		setUserTokenInHeader(postUser.getBody());
 		Debt debt = new DebtBuilder().withAmount(25d).withInstallment(3).build();
 		ResponseEntity<Debt> postDebt = debtControllerBuilder.withDebt(debt).post(postUser.getBody());
 
@@ -55,7 +64,8 @@ public class DebtControllerTest {
 
 	@Test
 	public void notAllowCreateDebtWithZeroOrNegativeAmount() {
-		ResponseEntity<User> postUser = new UserControllerBuilder(client, headers).post();
+		ResponseEntity<User> postUser = userControllerBuilder.post();
+		setUserTokenInHeader(postUser.getBody());
 		Debt debt = new DebtBuilder().withAmount(-25d).build();
 		ResponseEntity<Debt> postDebt = debtControllerBuilder.withDebt(debt).post(postUser.getBody());
 
@@ -65,7 +75,8 @@ public class DebtControllerTest {
 
 	@Test
 	public void notAllowCreateDebtWithZeroOrNegativeInstallment() {
-		ResponseEntity<User> postUser = new UserControllerBuilder(client, headers).post();
+		ResponseEntity<User> postUser = userControllerBuilder.post();
+		setUserTokenInHeader(postUser.getBody());
 		Debt debt = new DebtBuilder().withInstallment(-1).build();
 		ResponseEntity<Debt> postDebt = debtControllerBuilder.withDebt(debt).post(postUser.getBody());
 
@@ -76,7 +87,8 @@ public class DebtControllerTest {
 	@Test
 	public void reduceInstallmentAfterPay() {
 		Debt debt = new DebtBuilder().withInstallment(10).build();
-		ResponseEntity<User> postUser = new UserControllerBuilder(client, headers).post();
+		ResponseEntity<User> postUser = userControllerBuilder.post();
+		setUserTokenInHeader(postUser.getBody());
 		ResponseEntity<Debt> postDebt = debtControllerBuilder.withDebt(debt).post(postUser.getBody());
 		ResponseEntity<Debt> payDebt = debtControllerBuilder.withDebt(postDebt.getBody()).pay();
 
@@ -91,7 +103,8 @@ public class DebtControllerTest {
 	@Test
 	public void removeDebtAfterPayLastInstallment() {
 		Debt debt = new DebtBuilder().withInstallment(2).build();
-		ResponseEntity<User> postUser = new UserControllerBuilder(client, headers).post();
+		ResponseEntity<User> postUser = userControllerBuilder.post();
+		setUserTokenInHeader(postUser.getBody());
 		ResponseEntity<Debt> postDebt = debtControllerBuilder.withDebt(debt).post(postUser.getBody());
 		ResponseEntity<Debt> payDebt = debtControllerBuilder.withDebt(postDebt.getBody()).pay();
 		ResponseEntity<Debt> payDebtFinal = debtControllerBuilder.withDebt(postDebt.getBody()).pay();
@@ -108,7 +121,8 @@ public class DebtControllerTest {
 
 	@Test
 	public void sendUserRefInHeaderForListAllDebtOfUser() {
-		ResponseEntity<User> user = new UserControllerBuilder(client, headers).post();
+		ResponseEntity<User> user = userControllerBuilder.post();
+		setUserTokenInHeader(user.getBody());
 		debtControllerBuilder.postMultiples(5, user.getBody().getId());
 		ResponseEntity<String> debts = debtControllerBuilder.findAllPageable(user.getBody().getId());
 
@@ -119,7 +133,8 @@ public class DebtControllerTest {
 
 	@Test
 	public void getDetailsOfSpecifiedDebtById() {
-		ResponseEntity<User> postUser = new UserControllerBuilder(client, headers).post();
+		ResponseEntity<User> postUser = userControllerBuilder.post();
+		setUserTokenInHeader(postUser.getBody());
 		ResponseEntity<Debt> postDebt = debtControllerBuilder.post(postUser.getBody());
 		Debt debt = postDebt.getBody();
 		ResponseEntity<Debt> postDebt2 = debtControllerBuilder.post(postUser.getBody());
@@ -136,7 +151,8 @@ public class DebtControllerTest {
 
 	@Test
 	public void removeDebtById() {
-		ResponseEntity<User> postUser = new UserControllerBuilder(client, headers).post();
+		ResponseEntity<User> postUser = userControllerBuilder.post();
+		setUserTokenInHeader(postUser.getBody());
 		ResponseEntity<Debt> postDebt = debtControllerBuilder.post(postUser.getBody());
 		String debtId = postDebt.getBody().getId();
 		ResponseEntity<Void> deleteDebt = debtControllerBuilder.delete(debtId);
@@ -150,7 +166,8 @@ public class DebtControllerTest {
 
 	@Test
 	public void updateDebtDetails() {
-		ResponseEntity<User> postUser = new UserControllerBuilder(client, headers).post();
+		ResponseEntity<User> postUser = userControllerBuilder.post();
+		setUserTokenInHeader(postUser.getBody());
 		ResponseEntity<Debt> postDebt = debtControllerBuilder.post(postUser.getBody());
 		Debt debt = postDebt.getBody();
 		debt.setAmount(200d);

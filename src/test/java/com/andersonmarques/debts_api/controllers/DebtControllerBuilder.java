@@ -48,7 +48,7 @@ public class DebtControllerBuilder {
 	}
 
 	public ResponseEntity<Debt> pay() {
-		return client.postForEntity("/v1/debts/pay/" + this.debt.getId(), null, Debt.class);
+		return client.postForEntity("/v1/debts/pay/" + this.debt.getId(), new HttpEntity<>(headers), Debt.class);
 	}
 
 	public ResponseEntity<String> findAllPageable(String userId) {
