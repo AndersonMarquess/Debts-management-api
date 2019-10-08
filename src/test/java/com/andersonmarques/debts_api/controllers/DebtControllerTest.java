@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import com.andersonmarques.debts_api.models.Debt;
 import com.andersonmarques.debts_api.models.DebtBuilder;
 import com.andersonmarques.debts_api.models.User;
+import com.andersonmarques.debts_api.models.UserBuilder;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,7 @@ public class DebtControllerTest {
 
 	private void setUserTokenInHeader(User user) {
 		String jwt = userControllerBuilder.login(user.getEmail(), "password").getHeaders().getFirst(AUTHORIZATION);
+		headers.remove(AUTHORIZATION);
 		headers.add(AUTHORIZATION, jwt);
 	}
 
@@ -181,5 +183,23 @@ public class DebtControllerTest {
 		assertEquals(200, updateDebt.getStatusCodeValue());
 		assertEquals(debt.getAmount(), getDebt.getBody().getAmount());
 		assertEquals(debt.getInstallment(), getDebt.getBody().getInstallment());
+	}
+
+	@Test
+	public void notAllowUserToModifyDebtsNotCreatedForHimself() {
+		ResponseEntity<User> postUser = userControllerBuilder.post();
+		setUserTokenInHeader(postUser.getBody());
+		ResponseEntity<Debt> postDebt = debtControllerBuilder.post(postUser.getBody());
+		Debt debt = postDebt.getBody();
+		debt.setInstallment(99);
+		
+		User user = new UserBuilder().withEmail("user02@email.com").build();
+		ResponseEntity<User> postUser2 = userControllerBuilder.withUser(user).post();
+		setUserTokenInHeader(postUser2.getBody());
+		ResponseEntity<Debt> updateDebt = debtControllerBuilder.updateDebt(debt);
+		
+		assertEquals(201, postUser.getStatusCodeValue());
+		assertEquals(201, postDebt.getStatusCodeValue());
+		assertEquals(403, updateDebt.getStatusCodeValue());
 	}
 }

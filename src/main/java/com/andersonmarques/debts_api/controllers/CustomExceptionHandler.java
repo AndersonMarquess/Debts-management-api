@@ -2,6 +2,7 @@ package com.andersonmarques.debts_api.controllers;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.andersonmarques.debts_api.exceptions.IllegalAccessToModificationException;
 import com.andersonmarques.debts_api.exceptions.InvalidDebtIdException;
 import com.andersonmarques.debts_api.models.ApiError;
 
@@ -31,6 +32,14 @@ public class CustomExceptionHandler {
 	public ResponseEntity<ApiError> invalidDebtId(InvalidDebtIdException exception, HttpServletRequest request) {
 		logger.info("Request para {} resutou em uma exceção: {}", request.getRequestURI(), exception.getMessage());
 		ApiError error = new ApiError(HttpStatus.BAD_REQUEST, exception.getMessage(), request.getRequestURI());
+		return ResponseEntity.status(error.getStatus()).body(error);
+	}
+
+	@ExceptionHandler(IllegalAccessToModificationException.class)
+	public ResponseEntity<ApiError> illegalAccess(IllegalAccessToModificationException exception,
+			HttpServletRequest request) {
+		logger.info("Request para {} resutou em uma exceção: {}", request.getRequestURI(), exception.getMessage());
+		ApiError error = new ApiError(HttpStatus.FORBIDDEN, exception.getMessage(), request.getRequestURI());
 		return ResponseEntity.status(error.getStatus()).body(error);
 	}
 }

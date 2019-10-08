@@ -4,6 +4,7 @@ import javax.validation.Valid;
 
 import com.andersonmarques.debts_api.models.Debt;
 import com.andersonmarques.debts_api.services.DebtService;
+import com.andersonmarques.debts_api.services.OnlyOwnerHasAccessService;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,6 +30,8 @@ public class DebtController {
 
 	@Autowired
 	private DebtService debtService;
+	@Autowired
+	private OnlyOwnerHasAccessService onlyOwner;
 
 	@PostMapping(path = BASE_PATH_V1, consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
 	public ResponseEntity<Debt> create(@Valid @RequestBody Debt debt) {
@@ -66,6 +69,7 @@ public class DebtController {
 	@DeleteMapping(path = BASE_PATH_V1 + "/{debtId}", produces = APPLICATION_JSON)
 	public ResponseEntity<Void> deleteById(@PathVariable("debtId") String debtId) {
 		logger.info("Tentando remover dívida com id: {}", debtId);
+		onlyOwner.verify(debtId);
 		debtService.deleteById(debtId);
 		logger.info("Dívida com id {} removida com sucesso", debtId);
 		return ResponseEntity.ok().build();
@@ -74,6 +78,7 @@ public class DebtController {
 	@PutMapping(path = BASE_PATH_V1, consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
 	public ResponseEntity<Debt> update(@Valid @RequestBody Debt debt) {
 		logger.info("Tentando atualizar dívida: {}", debt);
+		onlyOwner.verify(debt.getId());
 		debt = debtService.update(debt);
 		logger.info("Dívida atualizada com sucesso: {}", debt);
 		return ResponseEntity.ok().body(debt);
