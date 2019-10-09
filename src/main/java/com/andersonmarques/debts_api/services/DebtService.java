@@ -22,8 +22,11 @@ public class DebtService {
 
 	@Autowired
 	private DebtRepository debtRepository;
+	@Autowired
+	private UserService userService;
 
 	public Debt create(Debt debt) {
+		debt.setOwnerId(userService.getAuthenticatedUserId());
 		return debtRepository.save(debt);
 	}
 

@@ -7,7 +7,6 @@ import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 import org.springframework.data.annotation.Id;
@@ -26,7 +25,6 @@ public class Debt {
 	@Max(99)
 	private Integer installment;
 	private Integer dueDay;
-	@NotEmpty(message = "O id do criador é obrigatório.")
 	private String ownerId;
 	private LocalDate creationDate;
 

@@ -33,18 +33,19 @@ public class JwtService {
 	public final String TOKEN_PREFIX = "Bearer ";
 	public final String HEADER_KEY = "Authorization";
 
-	public void addAuthenticationToResponse(HttpServletResponse response, String username) {
-		logger.info("Tentando gerar token para o usuário: {}", username);
-		String token = generateTokenJwt(username);
+	public void addAuthenticationToResponse(HttpServletResponse response, String email) {
+		logger.info("Tentando gerar token para o usuário: {}", email);
+		String token = generateTokenJwt(email);
 		response.addHeader(HEADER_KEY, TOKEN_PREFIX + token);
 		response.addHeader("access-control-expose-headers", "Authorization");
 		logger.info("Token gerado e adicionado ao header com sucesso");
 	}
 
-	private String generateTokenJwt(String username) {
+	private String generateTokenJwt(String email) {
 		return Jwts.builder()
 			.setIssuer("Debts management API")
-			.setSubject(username)
+			.claim("id", userService.findUserIdByEmail(email))
+			.setSubject(email)
 			.setIssuedAt(new Date())
 			.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
 			.signWith(Keys.hmacShaKeyFor(secret.getBytes()), SignatureAlgorithm.HS384)

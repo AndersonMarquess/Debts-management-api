@@ -29,7 +29,6 @@ public class DebtControllerBuilder {
 	 * @return
 	 */
 	public ResponseEntity<Debt> post(User user) {
-		this.debt.setOwnerId(user.getId());
 		return client.postForEntity("/v1/debts", new HttpEntity<Debt>(debt, headers), Debt.class);
 	}
 
