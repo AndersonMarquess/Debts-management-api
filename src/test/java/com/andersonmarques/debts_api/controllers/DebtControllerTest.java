@@ -60,7 +60,7 @@ public class DebtControllerTest {
 		assertEquals(201, postDebt.getStatusCodeValue());
 		assertNotNull(postDebt.getBody());
 		assertEquals(25d, postDebt.getBody().getAmount());
-		assertEquals(debt.getTotalAmount(), postDebt.getBody().getTotalAmount());
+		assertEquals(debt.getTotalAmountLeft(), postDebt.getBody().getTotalAmountLeft());
 		assertEquals(postUser.getBody().getId(), postDebt.getBody().getOwnerId());
 	}
 
@@ -87,7 +87,7 @@ public class DebtControllerTest {
 	}
 
 	@Test
-	public void reduceInstallmentAfterPay() {
+	public void increseCurrentInstallmentAfterPay() {
 		Debt debt = new DebtBuilder().withInstallment(10).build();
 		ResponseEntity<User> postUser = userControllerBuilder.post();
 		setUserTokenInHeader(postUser.getBody());
@@ -97,9 +97,9 @@ public class DebtControllerTest {
 		assertEquals(201, postUser.getStatusCodeValue());
 		assertEquals(201, postDebt.getStatusCodeValue());
 		assertEquals(200, payDebt.getStatusCodeValue());
-		assertEquals(10, debt.getInstallment());
+		assertEquals(1, debt.getCurrentInstallment());
 		assertNotNull(payDebt.getBody());
-		assertEquals(9, payDebt.getBody().getInstallment());
+		assertEquals(2, payDebt.getBody().getCurrentInstallment());
 	}
 
 	@Test
@@ -115,9 +115,9 @@ public class DebtControllerTest {
 		assertEquals(201, postDebt.getStatusCodeValue());
 		assertEquals(200, payDebt.getStatusCodeValue());
 		assertEquals(200, payDebtFinal.getStatusCodeValue());
-		assertEquals(2, debt.getInstallment());
+		assertEquals(1, debt.getCurrentInstallment());
 		assertNotNull(payDebt.getBody());
-		assertEquals(1, payDebt.getBody().getInstallment());
+		assertEquals(2, payDebt.getBody().getCurrentInstallment());
 		assertNull(payDebtFinal.getBody());
 	}
 
@@ -173,7 +173,7 @@ public class DebtControllerTest {
 		ResponseEntity<Debt> postDebt = debtControllerBuilder.post(postUser.getBody());
 		Debt debt = postDebt.getBody();
 		debt.setAmount(200d);
-		debt.setInstallment(48);
+		debt.setTotalInstallment(48);
 		ResponseEntity<Debt> updateDebt = debtControllerBuilder.updateDebt(debt);
 		ResponseEntity<Debt> getDebt = debtControllerBuilder.getDetailsFor(debt.getId());
 
@@ -182,7 +182,7 @@ public class DebtControllerTest {
 		assertEquals(200, getDebt.getStatusCodeValue());
 		assertEquals(200, updateDebt.getStatusCodeValue());
 		assertEquals(debt.getAmount(), getDebt.getBody().getAmount());
-		assertEquals(debt.getInstallment(), getDebt.getBody().getInstallment());
+		assertEquals(debt.getTotalInstallment(), getDebt.getBody().getTotalInstallment());
 	}
 
 	@Test
@@ -191,7 +191,7 @@ public class DebtControllerTest {
 		setUserTokenInHeader(postUser.getBody());
 		ResponseEntity<Debt> postDebt = debtControllerBuilder.post(postUser.getBody());
 		Debt debt = postDebt.getBody();
-		debt.setInstallment(99);
+		debt.setTotalInstallment(99);
 		
 		User user = new UserBuilder().withEmail("user02@email.com").build();
 		ResponseEntity<User> postUser2 = userControllerBuilder.withUser(user).post();

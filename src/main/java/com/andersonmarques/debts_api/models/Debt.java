@@ -18,29 +18,30 @@ public class Debt {
 	private String id;
 	@Size(min = 5, max = 60, message = "A descrição deve conter entre {min} e {max} caracteres.")
 	private String description;
+	private String category;
 	@DecimalMin("1.0")
 	@DecimalMax("999999.0")
 	private Double amount;
+	private Integer currentInstallment;
 	@Min(1)
 	@Max(99)
-	private Integer installment;
-	private Integer dueDay;
+	private Integer totalInstallment;
 	private String ownerId;
-	private LocalDate creationDate;
+	private LocalDate dueDate;
 
 	public Debt() {
 		this.id = UUID.randomUUID().toString();
-		this.creationDate = LocalDate.now();
-		this.installment = 1;
-		this.dueDay = 1;
+		this.dueDate = LocalDate.now();
+		this.currentInstallment = 1;
+		this.totalInstallment = 1;
 	}
 
-	public Debt(String description, Double amount, Integer installment, Integer dueDay, String ownerId) {
+	public Debt(String description, Double amount, Integer totalInstallment, LocalDate dueDate, String ownerId) {
 		this();
 		this.description = description;
 		this.amount = amount;
-		this.installment = installment;
-		this.dueDay = dueDay;
+		this.totalInstallment = totalInstallment;
+		this.dueDate = dueDate;
 		this.ownerId = ownerId;
 	}
 
@@ -60,6 +61,14 @@ public class Debt {
 		this.description = description;
 	}
 
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
 	public Double getAmount() {
 		return this.amount;
 	}
@@ -68,20 +77,20 @@ public class Debt {
 		this.amount = amount;
 	}
 
-	public Integer getInstallment() {
-		return this.installment;
+	public Integer getCurrentInstallment() {
+		return currentInstallment;
 	}
 
-	public void setInstallment(Integer installment) {
-		this.installment = installment;
+	public void setCurrentInstallment(Integer currentInstallment) {
+		this.currentInstallment = currentInstallment;
 	}
 
-	public Integer getDueDay() {
-		return this.dueDay;
+	public Integer getTotalInstallment() {
+		return totalInstallment;
 	}
 
-	public void setDueDay(Integer dueDay) {
-		this.dueDay = dueDay;
+	public void setTotalInstallment(Integer totalInstallment) {
+		this.totalInstallment = totalInstallment;
 	}
 
 	public String getOwnerId() {
@@ -92,20 +101,29 @@ public class Debt {
 		this.ownerId = ownerId;
 	}
 
-	public LocalDate getCreationDate() {
-		return creationDate;
-	}
-
 	public void payMonthly() {
-		this.installment--;
+		this.currentInstallment++;
+		this.dueDate.plusMonths(1);
 	}
 
 	public Double getTotalAmount() {
-		return this.amount * this.installment;
+		return this.amount * this.totalInstallment;
+	}
+
+	public Double getTotalAmountLeft() {
+		if (this.currentInstallment == 1) {
+			return getTotalAmount();
+		}
+
+		return getAmount() * (getTotalInstallment() - (getCurrentInstallment() - 1));
 	}
 
 	public LocalDate getDueDate() {
-		return LocalDate.now().withDayOfMonth(dueDay);
+		return this.dueDate;
+	}
+
+	public void setDueDate(LocalDate dueDate) {
+		this.dueDate = dueDate;
 	}
 
 	@Override
@@ -113,9 +131,11 @@ public class Debt {
 		return "{" +
 			" id='" + getId() + "'" +
 			", description='" + getDescription() + "'" +
+			", category='" + getCategory() + "'" +
 			", amount='" + getAmount() + "'" +
-			", installment='" + getInstallment() + "'" +
-			", dueDay='" + getDueDay() + "'" +
+			", currentInstallment='" + getCurrentInstallment() + "'" +
+			", totalInstallment='" + getTotalInstallment() + "'" +
+			", dueDate='" + getDueDate() + "'" +
 			", ownerId='" + getOwnerId() + "'" +
 			"}";
 	}

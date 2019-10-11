@@ -1,5 +1,7 @@
 package com.andersonmarques.debts_api.models;
 
+import java.time.LocalDate;
+
 public class DebtBuilder {
 
 	private String description;
@@ -32,7 +34,7 @@ public class DebtBuilder {
 	}
 
 	public Debt build() {
-		return new Debt(description, amount, installment, dueDay, ownerId);
+		return new Debt(description, amount, installment, LocalDate.now().withDayOfMonth(dueDay), ownerId);
 	}
 
 	public DebtBuilder withDescription(String description) {
