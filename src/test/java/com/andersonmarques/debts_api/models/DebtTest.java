@@ -36,20 +36,16 @@ public class DebtTest {
 
 	@Test
 	public void updateInstallmentAfterPay() {
+		LocalDate dateWithChoosenDay = LocalDate.now().withDayOfMonth(5);
 		Debt debt = new DebtBuilder().withAmount(50d).withInstallment(5).withDueDay(5).build();
-		assertEquals(1, debt.getCurrentInstallment());
-		assertEquals(250d, debt.getTotalAmount());
-		debt.payMonthly();
-		assertEquals(2, debt.getCurrentInstallment());
-		assertEquals(200d, debt.getTotalAmountLeft());
-		debt.payMonthly();
-		assertEquals(3, debt.getCurrentInstallment());
-		assertEquals(150d, debt.getTotalAmountLeft());
-		debt.payMonthly();
-		assertEquals(4, debt.getCurrentInstallment());
-		assertEquals(100d, debt.getTotalAmountLeft());
-		debt.payMonthly();
-		assertEquals(5, debt.getCurrentInstallment());
-		assertEquals(50d, debt.getTotalAmountLeft());
+		Double amountBaseControl = 300d;
+
+		for (int i = 0; i < 6; i++) {
+			amountBaseControl -= 50d;
+			assertEquals(i + 1, debt.getCurrentInstallment());
+			assertEquals(amountBaseControl, debt.getTotalAmountLeft(), 0.0001d);
+			assertEquals(dateWithChoosenDay.getMonth().plus(i), debt.getDueDate().getMonth());
+			debt.payMonthly();
+		}
 	}
 }

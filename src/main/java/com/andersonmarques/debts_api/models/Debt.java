@@ -103,7 +103,7 @@ public class Debt {
 
 	public void payMonthly() {
 		this.currentInstallment++;
-		this.dueDate.plusMonths(1);
+		this.dueDate = this.dueDate.plusMonths(1);
 	}
 
 	public Double getTotalAmount() {
