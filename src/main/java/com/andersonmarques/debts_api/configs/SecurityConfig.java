@@ -1,5 +1,7 @@
 package com.andersonmarques.debts_api.configs;
 
+import java.util.Arrays;
+
 import com.andersonmarques.debts_api.security.JwtAuthorizationFilter;
 import com.andersonmarques.debts_api.security.JwtLoginFilter;
 import com.andersonmarques.debts_api.security.JwtService;
@@ -54,7 +56,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		UrlBasedCorsConfigurationSource urlBased = new UrlBasedCorsConfigurationSource();
-		urlBased.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+		CorsConfiguration cors = new CorsConfiguration().applyPermitDefaultValues();
+		cors.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		urlBased.registerCorsConfiguration("/**", cors);
 		return urlBased;
 	}
 }
