@@ -7,16 +7,16 @@ Objetivo - Exercitar a construção de códigos em inglês e desenvolver uma API
 >    	- Spring boot
 >    	- Spring data
 >	    - Spring security
+>		- Spring test
 >	- JWT
 >	- Bean validation
 >	- MongoDB
 >	- Junit
 >	- Maven
 >- Front-end
->	- ❓
+>	- [Angular](https://github.com/AndersonMarquess/debts-management-frontend)
 >- Plataforma
 >	- Heroku
-> 	- Firebase
 
 ## Execução
 Link do projeto: 🛠 [Em construção]()

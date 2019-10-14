@@ -1,5 +1,7 @@
 package com.andersonmarques.debts_api.services;
 
+import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.exact;
+
 import java.util.Optional;
 
 import com.andersonmarques.debts_api.exceptions.InvalidDebtIdException;
@@ -56,7 +58,8 @@ public class DebtService {
 
 	public Page<Debt> findAllWithPg(Pageable pageable, String ownerId) {
 		Debt debt = new Debt(null, null, null, null, ownerId);
-		ExampleMatcher matcher = ExampleMatcher.matchingAny().withIgnorePaths("creationDate", "_id");
+
+		ExampleMatcher matcher = ExampleMatcher.matchingAny().withMatcher("ownerId", exact());
 		return debtRepository.findAll(Example.of(debt, matcher), pageable);
 	}
 
