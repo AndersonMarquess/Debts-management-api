@@ -42,7 +42,7 @@ public class DebtService {
 
 	public Debt pay(String debtId) {
 		Debt debt = findById(debtId);
-		if (debt.getCurrentInstallment() == debt.getTotalInstallment()) {
+		if (debt.getCurrentInstallment() == debt.getTotalInstallment() && !debt.isFixedCost()) {
 			logger.info("Pagamento da última prestação da dívida {}", debt);
 			deleteById(debtId);
 			return null;

@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.time.LocalDate;
+
 import com.andersonmarques.debts_api.models.Debt;
 import com.andersonmarques.debts_api.models.DebtBuilder;
 import com.andersonmarques.debts_api.models.User;
@@ -192,14 +194,30 @@ public class DebtControllerTest {
 		ResponseEntity<Debt> postDebt = debtControllerBuilder.post(postUser.getBody());
 		Debt debt = postDebt.getBody();
 		debt.setTotalInstallment(99);
-		
+
 		User user = new UserBuilder().withEmail("user02@email.com").build();
 		ResponseEntity<User> postUser2 = userControllerBuilder.withUser(user).post();
 		setUserTokenInHeader(postUser2.getBody());
 		ResponseEntity<Debt> updateDebt = debtControllerBuilder.updateDebt(debt);
-		
+
 		assertEquals(201, postUser.getStatusCodeValue());
 		assertEquals(201, postDebt.getStatusCodeValue());
 		assertEquals(403, updateDebt.getStatusCodeValue());
+	}
+
+	@Test
+	public void debtWithFixedCostNotChangeInstallmentAfterpay() {
+		Debt debt = new DebtBuilder().withFixedCost().withAmount(50d).build();
+		ResponseEntity<User> postUser = userControllerBuilder.post();
+		setUserTokenInHeader(postUser.getBody());
+		ResponseEntity<Debt> postDebt = debtControllerBuilder.withDebt(debt).post(postUser.getBody());
+		ResponseEntity<Debt> payDebtFinal = debtControllerBuilder.withDebt(postDebt.getBody()).pay();
+
+		assertEquals(201, postUser.getStatusCodeValue());
+		assertEquals(201, postDebt.getStatusCodeValue());
+		assertEquals(50d, postDebt.getBody().getTotalAmountLeft(), 0.0001);
+		assertEquals(LocalDate.now().withDayOfMonth(1), postDebt.getBody().getDueDate());
+		assertEquals(200, payDebtFinal.getStatusCodeValue());
+		assertEquals(LocalDate.now().withDayOfMonth(1).plusMonths(1), payDebtFinal.getBody().getDueDate());
 	}
 }

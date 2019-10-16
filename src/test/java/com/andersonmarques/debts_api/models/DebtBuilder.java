@@ -9,8 +9,10 @@ public class DebtBuilder {
 	private Integer installment;
 	private Integer dueDay;
 	private String ownerId;
+	private boolean fixedCost;
 
 	public DebtBuilder() {
+		this.fixedCost = false;
 		this.description = "dívida";
 		this.amount = 10d;
 		this.installment = 10;
@@ -34,11 +36,19 @@ public class DebtBuilder {
 	}
 
 	public Debt build() {
-		return new Debt(description, amount, installment, LocalDate.now().withDayOfMonth(dueDay), ownerId);
+		Debt debt = new Debt(description, amount, installment, LocalDate.now().withDayOfMonth(dueDay), ownerId);
+		debt.setFixedCost(this.fixedCost);
+		return debt;
 	}
 
 	public DebtBuilder withDescription(String description) {
 		this.description = description;
+		return this;
+	}
+
+	public DebtBuilder withFixedCost() {
+		this.fixedCost = true;
+		this.installment = 1;
 		return this;
 	}
 }

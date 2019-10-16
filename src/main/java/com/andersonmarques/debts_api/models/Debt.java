@@ -28,12 +28,14 @@ public class Debt {
 	private Integer totalInstallment;
 	private String ownerId;
 	private LocalDate dueDate;
+	private boolean fixedCost;
 
 	public Debt() {
 		this.id = UUID.randomUUID().toString();
 		this.dueDate = LocalDate.now();
 		this.currentInstallment = 1;
 		this.totalInstallment = 1;
+		this.setFixedCost(false);
 	}
 
 	public Debt(String description, Double amount, Integer totalInstallment, LocalDate dueDate, String ownerId) {
@@ -102,7 +104,9 @@ public class Debt {
 	}
 
 	public void payMonthly() {
-		this.currentInstallment++;
+		if (!this.isFixedCost()) {
+			this.currentInstallment++;
+		}
 		this.dueDate = this.dueDate.plusMonths(1);
 	}
 
@@ -111,7 +115,7 @@ public class Debt {
 	}
 
 	public Double getTotalAmountLeft() {
-		if (this.currentInstallment == 1) {
+		if (this.currentInstallment == 1 || this.isFixedCost()) {
 			return getTotalAmount();
 		}
 
@@ -126,17 +130,19 @@ public class Debt {
 		this.dueDate = dueDate;
 	}
 
+	public boolean isFixedCost() {
+		return fixedCost;
+	}
+
+	public void setFixedCost(boolean fixedCost) {
+		this.fixedCost = fixedCost;
+	}
+
 	@Override
 	public String toString() {
-		return "{" +
-			" id='" + getId() + "'" +
-			", description='" + getDescription() + "'" +
-			", category='" + getCategory() + "'" +
-			", amount='" + getAmount() + "'" +
-			", currentInstallment='" + getCurrentInstallment() + "'" +
-			", totalInstallment='" + getTotalInstallment() + "'" +
-			", dueDate='" + getDueDate() + "'" +
-			", ownerId='" + getOwnerId() + "'" +
-			"}";
+		return "{" + " id='" + getId() + "'" + ", description='" + getDescription() + "'" + ", category='"
+				+ getCategory() + "'" + ", amount='" + getAmount() + "'" + ", currentInstallment='"
+				+ getCurrentInstallment() + "'" + ", totalInstallment='" + getTotalInstallment() + "'" + ", dueDate='"
+				+ getDueDate() + "'" + ", ownerId='" + getOwnerId() + "'" + ", fixedCost='" + isFixedCost() + "'" + "}";
 	}
 }
