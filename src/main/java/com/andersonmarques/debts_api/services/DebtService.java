@@ -58,9 +58,16 @@ public class DebtService {
 
 	public Page<Debt> findAllWithPg(Pageable pageable, String ownerId) {
 		Debt debt = new Debt(null, null, null, null, ownerId);
-
-		ExampleMatcher matcher = ExampleMatcher.matchingAny().withMatcher("ownerId", exact());
+		ExampleMatcher matcher = ExampleMatcher.matching().withMatcher("ownerId", exact())
+				.withIgnorePaths(getAttributesToIgnoreInDebt());
+		
 		return debtRepository.findAll(Example.of(debt, matcher), pageable);
+	}
+
+	private String[] getAttributesToIgnoreInDebt() {
+		String ignoreAttributes[] = { "id", "description", "category", "amount", "currentInstallment",
+				"totalInstallment", "dueDate", "fixedCost" };
+		return ignoreAttributes;
 	}
 
 	public Debt update(Debt debt) {
